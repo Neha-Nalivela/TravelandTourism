@@ -1,7 +1,9 @@
-import React, { createContext } from "react";
-import Login from "./components/Login";
+// src/App.js
+import React, { createContext, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-export const AppContext = createContext();
+import Login from "./components/Login";
+import Register from "./components/Register";
+export const AppContext = createContext(); // ✅ Create and export context
 
 function Home() {
   return <h2>🏠 Welcome to Travel & Tourism</h2>;
@@ -12,19 +14,25 @@ function Destinations() {
 }
 
 function App() {
-  return (
-    <Router>
-      <nav style={{ padding: "20px", background: "#eee" }}>
-        <Link to="/" style={{ margin: "10px" }}>Home</Link>
-        <Link to="/destinations" style={{ margin: "520px" }}>Destinations</Link>
-      </nav>
+  const [user, setUser] = useState(null); // ✅ context state
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/destinations" element={<Destinations />} />
-      </Routes>
-    </Router>
+  return (
+    <AppContext.Provider value={{ user, setUser }}>
+      <Router>
+        <nav style={{ display: "flex", gap: "20px", padding: "20px", background: "#eee" }}>
+          <Link to="/">Home</Link>
+          <Link to="/destinations">Destinations</Link>
+          <Link to="/login">Login</Link>
+        </nav>
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register/>} />
+          <Route path="/destinations" element={<Destinations />} />
+        </Routes>
+      </Router>
+    </AppContext.Provider>
   );
 }
 

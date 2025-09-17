@@ -1,39 +1,30 @@
 // src/components/Login.jsx
 import React, { useState, useContext } from "react";
-import axios from "axios";
 import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
-const API = import.meta.env.VITE_API_URL;
-
 export default function Login() {
-  const { user, setUser } = useContext(AppContext);
+  const { setUser } = useContext(AppContext);
   const [msg, setMsg] = useState("");
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-    try {
-      const res = await axios.post(`${API}/users/login`, credentials);
-
-      if (!res.data || res.data.message === "Invalid user or password") {
-        setMsg("Invalid email or password.");
-        return;
-      }
-
-      // Success - Set user info from DB
-      setUser({
-        name: res.data.name,
-        email: res.data.email,
-        token: res.data.token, // if you later use JWT or token, replace this
-      });
-      setMsg("Welcome " + res.data.name);
-      navigate("/"); // redirect to home
-    } catch (err) {
-      console.error("Login error:", err);
-      setMsg("Server error. Try again later.");
+  const handleSubmit = () => {
+    if (!credentials.email || !credentials.password) {
+      setMsg("Please enter email and password.");
+      return;
     }
+
+    // ✅ Fake login success
+    setUser({
+      name: credentials.email.split("@")[0], // just use part of email as name
+      email: credentials.email,
+      token: "dummy-token",
+    });
+
+    setMsg("Welcome " + credentials.email);
+    navigate("/"); // redirect to home
   };
 
   const goToRegister = () => navigate("/register");
