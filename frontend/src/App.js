@@ -10,6 +10,9 @@ import HotelList from "./components/HotelList";
 import FlightList from "./components/FlightList";
 import BookingPage from "./components/BookingPage";
 import BookPackage from "./components/BookingPackage";
+import MyBookings from "./components/MyBookings";
+import PaymentPage from "./components/PaymentsPage";
+
 import { BookingProvider } from "./context/BookingContext"; // if used
 export const AppContext = createContext(); // ✅ Create and export context
 
@@ -48,6 +51,8 @@ function App() {
           <Route path="/flights" element={<FlightList />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/book/:id" element={<BookPackage />} />
+          <Route path="/bookings" element={<MyBookings />} />
+          <Route path="/payment" element={<PaymentPage />} />
         </Routes>
       </Router>
     </AppContext.Provider>

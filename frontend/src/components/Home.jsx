@@ -1,16 +1,26 @@
+// src/components/Home.js
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 import Paris from "../assets/Paris1.jpg";
 import Bali from "../images/Bali.jpg";
 import NewYork from "../images/NewYork.jpg";
 
+// Make sure these files exist with correct extensions
+import Summersale from "../images/Summersale.jpg";
+import Wintersale from "../images/wintersale.jpg";
+import Cityexplorer from "../images/cityexplorer.jpg";
+
 const Home = () => {
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
     setBookings(storedBookings);
+    const storedUser = JSON.parse(localStorage.getItem("user")) || null;
+    setUser(storedUser);
   }, []);
 
   const menuOptions = [
@@ -33,15 +43,48 @@ const Home = () => {
     { id: 3, name: "Cultural Tour", price: "$700", image: "https://source.unsplash.com/300x200/?culture" },
   ];
 
+  const specialDeals = [
+    { id: 1, title: "Summer Sale", description: "Up to 30% off on selected beach destinations!", image: Summersale },
+    { id: 2, title: "Winter Wonderland", description: "25% off mountain resorts!", image: Wintersale },
+    { id: 3, title: "City Explorer", description: "Book 2 nights, get 1 free in metropolitan cities!", image: Cityexplorer },
+  ];
+
   const testimonials = [
     { name: "John Doe", comment: "Amazing experience! Highly recommended." },
     { name: "Jane Smith", comment: "Best travel portal ever, loved the packages." },
   ];
 
+  const handleBook = (pkg) => {
+    if (!user) {
+      alert("⚠️ Please login to book a package!");
+      navigate("/login");
+      return;
+    }
+
+    const newBooking = {
+      name: pkg.name,
+      image: pkg.image,
+      price: pkg.price,
+      type: "Package",
+    };
+    const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    localStorage.setItem("bookings", JSON.stringify([...existingBookings, newBooking]));
+    setBookings([...existingBookings, newBooking]);
+    alert(`✅ Package booked: ${pkg.name}`);
+  };
+
+  const handleCancel = (index) => {
+    const updatedBookings = [...bookings];
+    updatedBookings.splice(index, 1);
+    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
+    setBookings(updatedBookings);
+  };
+
   return (
     <div className="home-container">
       <h1>🏠 Welcome to Travel & Tourism</h1>
 
+      {/* Quick Links */}
       <h2>Quick Links</h2>
       <div className="menu-grid">
         {menuOptions.map((option, index) => (
@@ -51,6 +94,7 @@ const Home = () => {
         ))}
       </div>
 
+      {/* Featured Destinations */}
       <h2>🌟 Featured Destinations</h2>
       <div className="scroll-container">
         {featuredDestinations.map((dest, index) => (
@@ -64,6 +108,7 @@ const Home = () => {
         <Link to="/destinations">View all destinations →</Link>
       </div>
 
+      {/* Popular Packages */}
       <h2>🧳 Popular Packages</h2>
       <div className="scroll-container">
         {popularPackages.map((pkg) => (
@@ -72,17 +117,43 @@ const Home = () => {
             <div>
               <h4>{pkg.name}</h4>
               <p>{pkg.price}</p>
-              <Link to={`/book/${pkg.id}`} className="book-btn">Book Now</Link>
+              <button className="book-btn" onClick={() => handleBook(pkg)}>Book Now</button>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Special Deals Full Page */}
       <h2>🔥 Special Deals</h2>
-      <div className="deals-banner">
-        <h3>Summer Sale: Up to 30% off on selected destinations!</h3>
+      <div className="special-deals-container">
+        {/* Left Column */}
+        <div className="left-deals">
+          <div className="deal-card">
+            <img src={specialDeals[0].image} alt={specialDeals[0].title} />
+            <h4>{specialDeals[0].title}</h4>
+            <p>{specialDeals[0].description}</p>
+            <Link to="/packages" className="book-btn">Book Now</Link>
+          </div>
+          <div className="deal-card">
+            <img src={specialDeals[1].image} alt={specialDeals[1].title} />
+            <h4>{specialDeals[1].title}</h4>
+            <p>{specialDeals[1].description}</p>
+            <Link to="/packages" className="book-btn">Book Now</Link>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="right-deal">
+          <div className="deal-card">
+            <img src={specialDeals[2].image} alt={specialDeals[2].title} />
+            <h4>{specialDeals[2].title}</h4>
+            <p>{specialDeals[2].description}</p>
+            <Link to="/packages" className="book-btn">Book Now</Link>
+          </div>
+        </div>
       </div>
 
+      {/* Testimonials */}
       <h2>💬 What Our Travelers Say</h2>
       <div className="scroll-container">
         {testimonials.map((t, index) => (
@@ -93,6 +164,7 @@ const Home = () => {
         ))}
       </div>
 
+      {/* My Bookings */}
       <h2>📝 My Bookings</h2>
       {bookings.length > 0 ? (
         <div className="scroll-container">
@@ -102,7 +174,9 @@ const Home = () => {
               <div>
                 <h4>{b.name}</h4>
                 <p>{b.price}</p>
-                <p className="confirmed">✅ Seat Confirmed</p>
+                {b.location && <p>Location: {b.location}</p>}
+                <p className="confirmed">✅ Booking Confirmed</p>
+                <button className="cancel-btn" onClick={() => handleCancel(index)}>Cancel</button>
               </div>
             </div>
           ))}

@@ -1,6 +1,6 @@
 import React from "react";
-import "./HotelList.css"; // ✅ Import the CSS file
-import {Link} from "react-router-dom";
+import "./HotelList.css";
+
 const HotelList = () => {
   const hotels = [
     {
@@ -32,9 +32,25 @@ const HotelList = () => {
     },
   ];
 
+  // ✅ Handle booking and store in localStorage
+  const handleBook = (hotel) => {
+    const newBooking = {
+      name: hotel.name,
+      image: hotel.image,
+      price: `₹${hotel.pricePerNight} / night`,
+      location: hotel.location,
+      type: "Hotel",
+    };
+
+    const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    localStorage.setItem("bookings", JSON.stringify([...existingBookings, newBooking]));
+
+    alert(`🏨 Booking confirmed for ${hotel.name}!`);
+  };
+
   return (
     <div className="hotel-list">
-      <h2>Popular Hotels</h2>
+      <h2>🏨 Popular Hotels</h2>
       <div className="hotels">
         {hotels.map((hotel) => (
           <div key={hotel._id} className="hotel-card">
@@ -45,12 +61,9 @@ const HotelList = () => {
               <p><strong>Price/Night:</strong> ₹{hotel.pricePerNight}</p>
               <p><strong>Rating:</strong> {hotel.rating} ⭐</p>
               <p className="description">{hotel.description}</p>
-              <button className="book-btn">
-                <Link to="/booking" state={{type:"hotel", name: hotel.name}} 
-                style={{color:"#fff", textdecoration:"none"}}>
+              <button className="book-btn" onClick={() => handleBook(hotel)}>
                 Book Now
-                </Link>
-                </button>
+              </button>
             </div>
           </div>
         ))}
