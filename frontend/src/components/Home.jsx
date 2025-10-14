@@ -1,9 +1,18 @@
-// src/components/Home.js
-import React from "react";
-import Paris1 from "../assets/Paris1.jpg"
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import "./Home.css";
+import Paris from "../assets/Paris1.jpg";
+import Bali from "../images/Bali.jpg";
+import NewYork from "../images/NewYork.jpg";
 
 const Home = () => {
+  const [bookings, setBookings] = useState([]);
+
+  useEffect(() => {
+    const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    setBookings(storedBookings);
+  }, []);
+
   const menuOptions = [
     { title: "🌍 Explore Destinations", path: "/destinations" },
     { title: "🧳 Tour Packages", path: "/packages" },
@@ -13,15 +22,15 @@ const Home = () => {
   ];
 
   const featuredDestinations = [
-    { name: "Paris", image: "Paris1.jpg" },
-    { name: "Bali", image: "https://source.unsplash.com/300x200/?bali" },
-    { name: "New York", image: "https://source.unsplash.com/300x200/?newyork" },
+    { name: "Paris", image: Paris },
+    { name: "Bali", image: Bali },
+    { name: "New York", image: NewYork },
   ];
 
   const popularPackages = [
-    { name: "Adventure Trip", price: "$1200", image: "https://source.unsplash.com/300x200/?adventure" },
-    { name: "Beach Holiday", price: "$900", image: "https://source.unsplash.com/300x200/?beach" },
-    { name: "Cultural Tour", price: "$700", image: "https://source.unsplash.com/300x200/?culture" },
+    { id: 1, name: "Adventure Trip", price: "$1200", image: "https://source.unsplash.com/300x200/?adventure" },
+    { id: 2, name: "Beach Holiday", price: "$900", image: "https://source.unsplash.com/300x200/?beach" },
+    { id: 3, name: "Cultural Tour", price: "$700", image: "https://source.unsplash.com/300x200/?culture" },
   ];
 
   const testimonials = [
@@ -30,62 +39,77 @@ const Home = () => {
   ];
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="home-container">
       <h1>🏠 Welcome to Travel & Tourism</h1>
 
-      {/* Menu Cards */}
-      <h2 style={{ marginTop: "30px" }}>Quick Links</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", marginTop: "20px" }}>
+      <h2>Quick Links</h2>
+      <div className="menu-grid">
         {menuOptions.map((option, index) => (
-          <Link key={index} to={option.path} style={{ textDecoration: "none", color: "black" }}>
-            <div style={{ padding: "20px", background: "#f5f5f5", borderRadius: "10px", boxShadow: "0 2px 5px rgba(0,0,0,0.1)", textAlign: "center", transition: "0.3s" }}>
-              <h3>{option.title}</h3>
-            </div>
+          <Link key={index} to={option.path} className="menu-card">
+            <h3>{option.title}</h3>
           </Link>
         ))}
       </div>
 
-      {/* Featured Destinations */}
-      <h2 style={{ marginTop: "50px" }}>🌟 Featured Destinations</h2>
-      <div style={{ display: "flex", gap: "20px", overflowX: "auto", padding: "10px 0" }}>
+      <h2>🌟 Featured Destinations</h2>
+      <div className="scroll-container">
         {featuredDestinations.map((dest, index) => (
-          <div key={index} style={{ minWidth: "250px", borderRadius: "10px", overflow: "hidden", boxShadow: "0 2px 5px rgba(0,0,0,0.1)" }}>
-            <img src={dest.image} alt={dest.name} style={{ width: "100%", height: "150px", objectFit: "cover" }} />
-            <h4 style={{ padding: "10px" }}>{dest.name}</h4>
+          <div key={index} className="destination-card">
+            <img src={dest.image} alt={dest.name} />
+            <h4>{dest.name}</h4>
           </div>
         ))}
       </div>
+      <div className="view-more">
+        <Link to="/destinations">View all destinations →</Link>
+      </div>
 
-      {/* Popular Packages */}
-      <h2 style={{ marginTop: "50px" }}>🧳 Popular Packages</h2>
-      <div style={{ display: "flex", gap: "20px", overflowX: "auto", padding: "10px 0" }}>
-        {popularPackages.map((pkg, index) => (
-          <div key={index} style={{ minWidth: "250px", borderRadius: "10px", overflow: "hidden", boxShadow: "0 2px 5px rgba(0,0,0,0.1)" }}>
-            <img src={pkg.image} alt={pkg.name} style={{ width: "100%", height: "150px", objectFit: "cover" }} />
-            <div style={{ padding: "10px" }}>
+      <h2>🧳 Popular Packages</h2>
+      <div className="scroll-container">
+        {popularPackages.map((pkg) => (
+          <div key={pkg.id} className="package-item">
+            <img src={pkg.image} alt={pkg.name} />
+            <div>
               <h4>{pkg.name}</h4>
               <p>{pkg.price}</p>
+              <Link to={`/book/${pkg.id}`} className="book-btn">Book Now</Link>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Promotions / Deals Banner */}
-      <h2 style={{ marginTop: "50px" }}>🔥 Special Deals</h2>
-      <div style={{ padding: "20px", background: "#ffd700", borderRadius: "10px", marginTop: "10px" }}>
+      <h2>🔥 Special Deals</h2>
+      <div className="deals-banner">
         <h3>Summer Sale: Up to 30% off on selected destinations!</h3>
       </div>
 
-      {/* Testimonials */}
-      <h2 style={{ marginTop: "50px" }}>💬 What Our Travelers Say</h2>
-      <div style={{ display: "flex", gap: "20px", overflowX: "auto", padding: "10px 0" }}>
+      <h2>💬 What Our Travelers Say</h2>
+      <div className="scroll-container">
         {testimonials.map((t, index) => (
-          <div key={index} style={{ minWidth: "250px", padding: "20px", background: "#f5f5f5", borderRadius: "10px", boxShadow: "0 2px 5px rgba(0,0,0,0.1)" }}>
+          <div key={index} className="testimonial-card">
             <p>"{t.comment}"</p>
-            <h5 style={{ marginTop: "10px", fontWeight: "bold" }}>- {t.name}</h5>
+            <h5>- {t.name}</h5>
           </div>
         ))}
       </div>
+
+      <h2>📝 My Bookings</h2>
+      {bookings.length > 0 ? (
+        <div className="scroll-container">
+          {bookings.map((b, index) => (
+            <div key={index} className="booking-card">
+              <img src={b.image} alt={b.name} />
+              <div>
+                <h4>{b.name}</h4>
+                <p>{b.price}</p>
+                <p className="confirmed">✅ Seat Confirmed</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p>No bookings yet. Book your next adventure!</p>
+      )}
     </div>
   );
 };

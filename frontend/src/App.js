@@ -5,6 +5,12 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
 import Destinations from "./components/Destinations";
+import Packages from "./components/Packages";
+import HotelList from "./components/HotelList";
+import FlightList from "./components/FlightList";
+import BookingPage from "./components/BookingPage";
+import BookPackage from "./components/BookingPackage";
+import { BookingProvider } from "./context/BookingContext"; // if used
 export const AppContext = createContext(); // ✅ Create and export context
 
 function App() {
@@ -13,32 +19,35 @@ function App() {
   return (
     <AppContext.Provider value={{ user, setUser }}>
       <Router>
-     
-<nav style={{ display: "flex", gap: "20px", padding: "20px", background: "#eee" }}>
-  <Link to="/">Home</Link>
-  <Link to="/destinations">Destinations</Link>
-  {!user ? (
-    <Link to="/login">Login</Link>
-  ) : (
-    <>
-      <span>Welcome, {user.name}</span>
-      <button
-        onClick={() => setUser(null)}
-        style={{ background: "none", border: "1px solid #888", padding: "5px 10px" }}
-      >
-        Logout
-      </button>
-    </>
-  )}
-</nav>
-
+        <nav style={{ display: "flex", gap: "20px", padding: "20px", background: "#eee" }}>
+          <Link to="/">Home</Link>
+          <Link to="/destinations">Destinations</Link>
+          {!user ? (
+            <Link to="/login">Login</Link>
+          ) : (
+            <>
+              <span>Welcome, {user.name}</span>
+              <button
+                onClick={() => setUser(null)}
+                style={{ background: "none", border: "1px solid #888", padding: "5px 10px" }}
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </nav>
 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register/>} />
+          <Route path="/register" element={<Register />} />
           <Route path="/destinations" element={<Destinations />} />
-          <Route path="/home" element={<Home/>} />
+          <Route path="/packages" element={<Packages />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/hotels" element={<HotelList />} />
+          <Route path="/flights" element={<FlightList />} />
+          <Route path="/booking" element={<BookingPage />} />
+          <Route path="/book/:id" element={<BookPackage />} />
         </Routes>
       </Router>
     </AppContext.Provider>
