@@ -13,11 +13,25 @@ function App() {
   return (
     <AppContext.Provider value={{ user, setUser }}>
       <Router>
-        <nav style={{ display: "flex", gap: "20px", padding: "20px", background: "#eee" }}>
-          <Link to="/">Home</Link>
-          <Link to="/destinations">Destinations</Link>
-          <Link to="/login">Login</Link>
-        </nav>
+     
+<nav style={{ display: "flex", gap: "20px", padding: "20px", background: "#eee" }}>
+  <Link to="/">Home</Link>
+  <Link to="/destinations">Destinations</Link>
+  {!user ? (
+    <Link to="/login">Login</Link>
+  ) : (
+    <>
+      <span>Welcome, {user.name}</span>
+      <button
+        onClick={() => setUser(null)}
+        style={{ background: "none", border: "1px solid #888", padding: "5px 10px" }}
+      >
+        Logout
+      </button>
+    </>
+  )}
+</nav>
+
 
         <Routes>
           <Route path="/" element={<Home />} />
