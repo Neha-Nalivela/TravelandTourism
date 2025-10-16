@@ -1,5 +1,4 @@
-// src/App.js
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -13,11 +12,25 @@ import BookPackage from "./components/BookingPackage";
 import MyBookings from "./components/MyBookings";
 import PaymentPage from "./components/PaymentsPage";
 
-import { BookingProvider } from "./context/BookingContext"; // if used
-export const AppContext = createContext(); // ✅ Create and export context
+export const AppContext = createContext();
 
 function App() {
-  const [user, setUser] = useState(null); // ✅ context state
+  const [user, setUser] = useState(null);
+
+  // ✅ Load user from localStorage on app start
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) setUser(storedUser);
+  }, []);
+
+  // ✅ Save user to localStorage whenever it changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
 
   return (
     <AppContext.Provider value={{ user, setUser }}>

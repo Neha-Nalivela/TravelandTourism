@@ -1,4 +1,3 @@
-// src/components/Login.jsx
 import React, { useState, useContext } from "react";
 import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";
@@ -17,11 +16,16 @@ export default function Login() {
     }
 
     // ✅ Fake login success
-    setUser({
-      name: credentials.email.split("@")[0], // just use part of email as name
+    const loggedInUser = {
+      name: credentials.email.split("@")[0],
       email: credentials.email,
       token: "dummy-token",
-    });
+    };
+
+    setUser(loggedInUser);
+
+    // ✅ Save user to localStorage so Home.jsx sees it
+    localStorage.setItem("user", JSON.stringify(loggedInUser));
 
     setMsg("Welcome " + credentials.email);
     navigate("/"); // redirect to home

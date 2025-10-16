@@ -40,10 +40,14 @@ const FlightList = () => {
 
   const handleBook = (flight) => {
     const newBooking = {
+      id: Date.now(),
       name: flight.airline,
       image: flight.logo,
       price: flight.price,
       type: "Flight",
+      from: flight.from,
+      to: flight.to,
+      status: "Confirmed",
     };
 
     const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];

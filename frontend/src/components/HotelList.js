@@ -32,19 +32,19 @@ const HotelList = () => {
     },
   ];
 
-  // ✅ Handle booking and store in localStorage
   const handleBook = (hotel) => {
     const newBooking = {
+      id: Date.now(),
       name: hotel.name,
       image: hotel.image,
-      price: `₹${hotel.pricePerNight} / night`,
+      price: `₹${hotel.pricePerNight}`,
       location: hotel.location,
       type: "Hotel",
+      status: "Confirmed",
     };
 
     const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
     localStorage.setItem("bookings", JSON.stringify([...existingBookings, newBooking]));
-
     alert(`🏨 Booking confirmed for ${hotel.name}!`);
   };
 

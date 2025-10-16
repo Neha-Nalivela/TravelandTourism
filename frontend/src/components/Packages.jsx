@@ -1,8 +1,17 @@
-// src/components/Packages.js
-import React from "react";
+// src/components/Packages.jsx
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Packages.css";
 
 const Packages = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user")) || null;
+    setUser(storedUser);
+  }, []);
+
   const tourPackages = [
     {
       id: 1,
@@ -37,6 +46,31 @@ const Packages = () => {
     },
   ];
 
+  // ✅ Booking function — same logic as Home.jsx
+  const handleBook = (pkg) => {
+    if (!user) {
+      alert("⚠️ Please login to book a package!");
+      navigate("/login");
+      return;
+    }
+
+    const newBooking = {
+      name: pkg.name,
+      image: pkg.image,
+      price: pkg.price,
+      type: "Package",
+    };
+
+    const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    const updatedBookings = [...existingBookings, newBooking];
+    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
+
+    // Dispatch event to notify Home/MyBookings
+    window.dispatchEvent(new Event("storage"));
+
+    alert(`✅ Package booked successfully: ${pkg.name}`);
+  };
+
   return (
     <div className="packages-container">
       <h1>🧳 Tour Packages</h1>
@@ -54,7 +88,9 @@ const Packages = () => {
                   <li key={i}>{item}</li>
                 ))}
               </ul>
-              <button className="book-btn">Book Now</button>
+              <button className="book-btn" onClick={() => handleBook(pkg)}>
+                Book Now
+              </button>
             </div>
           </div>
         ))}

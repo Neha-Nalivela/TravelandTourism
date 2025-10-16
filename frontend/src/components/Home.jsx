@@ -1,12 +1,10 @@
-// src/components/Home.js
+// src/components/Home.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 import Paris from "../assets/Paris1.jpg";
 import Bali from "../images/Bali.jpg";
 import NewYork from "../images/NewYork.jpg";
-
-// Make sure these files exist with correct extensions
 import Summersale from "../images/Summersale.jpg";
 import Wintersale from "../images/wintersale.jpg";
 import Cityexplorer from "../images/cityexplorer.jpg";
@@ -16,11 +14,20 @@ const Home = () => {
   const [bookings, setBookings] = useState([]);
   const [user, setUser] = useState(null);
 
+  // Load from localStorage
   useEffect(() => {
     const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
     setBookings(storedBookings);
     const storedUser = JSON.parse(localStorage.getItem("user")) || null;
     setUser(storedUser);
+
+    // Listen for updates from other pages
+    const handleStorageUpdate = () => {
+      const updatedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+      setBookings(updatedBookings);
+    };
+    window.addEventListener("storage", handleStorageUpdate);
+    return () => window.removeEventListener("storage", handleStorageUpdate);
   }, []);
 
   const menuOptions = [
@@ -54,6 +61,7 @@ const Home = () => {
     { name: "Jane Smith", comment: "Best travel portal ever, loved the packages." },
   ];
 
+  // ✅ FIXED: Booking now updates Home instantly
   const handleBook = (pkg) => {
     if (!user) {
       alert("⚠️ Please login to book a package!");
@@ -67,9 +75,11 @@ const Home = () => {
       price: pkg.price,
       type: "Package",
     };
+
     const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    localStorage.setItem("bookings", JSON.stringify([...existingBookings, newBooking]));
-    setBookings([...existingBookings, newBooking]);
+    const updatedBookings = [...existingBookings, newBooking];
+    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
+    setBookings(updatedBookings);
     alert(`✅ Package booked: ${pkg.name}`);
   };
 
@@ -104,6 +114,7 @@ const Home = () => {
           </div>
         ))}
       </div>
+
       <div className="view-more">
         <Link to="/destinations">View all destinations →</Link>
       </div>
@@ -123,28 +134,22 @@ const Home = () => {
         ))}
       </div>
 
-      {/* Special Deals Full Page */}
+      {/* 🔥 Special Deals - Equal height left & right */}
       <h2>🔥 Special Deals</h2>
       <div className="special-deals-container">
-        {/* Left Column */}
         <div className="left-deals">
-          <div className="deal-card">
-            <img src={specialDeals[0].image} alt={specialDeals[0].title} />
-            <h4>{specialDeals[0].title}</h4>
-            <p>{specialDeals[0].description}</p>
-            <Link to="/packages" className="book-btn">Book Now</Link>
-          </div>
-          <div className="deal-card">
-            <img src={specialDeals[1].image} alt={specialDeals[1].title} />
-            <h4>{specialDeals[1].title}</h4>
-            <p>{specialDeals[1].description}</p>
-            <Link to="/packages" className="book-btn">Book Now</Link>
-          </div>
+          {specialDeals.slice(0, 2).map((deal) => (
+            <div className="deal-card" key={deal.id}>
+              <img src={deal.image} alt={deal.title} />
+              <h4>{deal.title}</h4>
+              <p>{deal.description}</p>
+              <Link to="/packages" className="book-btn">Book Now</Link>
+            </div>
+          ))}
         </div>
 
-        {/* Right Column */}
         <div className="right-deal">
-          <div className="deal-card">
+          <div className="deal-card full-height">
             <img src={specialDeals[2].image} alt={specialDeals[2].title} />
             <h4>{specialDeals[2].title}</h4>
             <p>{specialDeals[2].description}</p>
@@ -174,7 +179,6 @@ const Home = () => {
               <div>
                 <h4>{b.name}</h4>
                 <p>{b.price}</p>
-                {b.location && <p>Location: {b.location}</p>}
                 <p className="confirmed">✅ Booking Confirmed</p>
                 <button className="cancel-btn" onClick={() => handleCancel(index)}>Cancel</button>
               </div>

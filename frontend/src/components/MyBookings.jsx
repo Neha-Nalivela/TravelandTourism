@@ -1,11 +1,12 @@
-// src/components/MyBookings.js
 import React, { useEffect, useState, useContext } from "react";
 import { AppContext } from "../App";
+import { useNavigate } from "react-router-dom";
 import "./MyBookings.css";
 
 const MyBookings = () => {
-  const { user } = useContext(AppContext); // Check if user is logged in
+  const { user } = useContext(AppContext);
   const [bookings, setBookings] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
@@ -14,19 +15,19 @@ const MyBookings = () => {
 
   const handleCancel = (index) => {
     if (!user) {
-      alert("⚠️ You must be logged in to cancel a booking!");
+      alert("⚠️ Please log in to cancel a booking!");
       return;
     }
 
-    // Remove the booking at the specified index
-    const updatedBookings = [...bookings];
-    const removedBooking = updatedBookings.splice(index, 1)[0];
+    const updated = [...bookings];
+    const cancelled = updated.splice(index, 1)[0];
+    localStorage.setItem("bookings", JSON.stringify(updated));
+    setBookings(updated);
+    alert(`❌ Booking for "${cancelled.name}" cancelled.`);
+  };
 
-    // Update localStorage and state
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
-    setBookings(updatedBookings);
-
-    alert(`❌ Booking for "${removedBooking.name}" has been cancelled.`);
+  const handlePayment = (booking) => {
+    navigate("/payment", { state: { booking } });
   };
 
   return (
@@ -35,7 +36,7 @@ const MyBookings = () => {
       {!user ? (
         <p>⚠️ Please login to view your bookings.</p>
       ) : bookings.length === 0 ? (
-        <p>You haven't booked anything yet.</p>
+        <p>No bookings yet.</p>
       ) : (
         <div className="booking-list">
           {bookings.map((b, index) => (
@@ -44,11 +45,18 @@ const MyBookings = () => {
               <div>
                 <h4>{b.name}</h4>
                 <p>Type: {b.type}</p>
-                <p>Price: {b.price}</p>
                 {b.location && <p>Location: {b.location}</p>}
-                <p className="confirmed">✅ Booking Confirmed</p>
+                <p>Price: {b.price}</p>
+                <p>Status: {b.status || "Confirmed"}</p>
+
+                {b.status !== "Paid" && (
+                  <button className="pay-btn" onClick={() => handlePayment(b)}>
+                    💳 Pay Now
+                  </button>
+                )}
+
                 <button className="cancel-btn" onClick={() => handleCancel(index)}>
-                  Cancel Booking
+                  Cancel
                 </button>
               </div>
             </div>
