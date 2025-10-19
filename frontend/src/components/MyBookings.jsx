@@ -9,56 +9,58 @@ const MyBookings = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Load all bookings from localStorage
     const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    setBookings(storedBookings);
-  }, []);
+
+    if (user && user.email) {
+      // Filter only the logged-in user's bookings
+      const userBookings = storedBookings.filter(
+        (b) => b.userEmail === user.email
+      );
+      setBookings(userBookings);
+    } else {
+      // If not logged in, clear bookings
+      setBookings([]);
+    }
+  }, [user]);
 
   const handleCancel = (index) => {
     if (!user) {
-      alert("⚠️ Please log in to cancel a booking!");
+      navigate("/login", { state: { from: "/bookings" } });
       return;
     }
 
-    const updated = [...bookings];
-    const cancelled = updated.splice(index, 1)[0];
-    localStorage.setItem("bookings", JSON.stringify(updated));
-    setBookings(updated);
-    alert(`❌ Booking for "${cancelled.name}" cancelled.`);
-  };
+    const updatedBookings = [...bookings];
+    const cancelled = updatedBookings.splice(index, 1)[0];
 
-  const handlePayment = (booking) => {
-    navigate("/payment", { state: { booking } });
+    // Update localStorage (remove cancelled booking globally)
+    const allBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    const newAllBookings = allBookings.filter(
+      (b) => !(b.userEmail === user.email && b.name === cancelled.name)
+    );
+    localStorage.setItem("bookings", JSON.stringify(newAllBookings));
+
+    setBookings(updatedBookings);
+    alert(`❌ Booking for "${cancelled.name}" has been cancelled.`);
   };
 
   return (
     <div className="my-bookings">
       <h2>📝 My Bookings</h2>
+
       {!user ? (
         <p>⚠️ Please login to view your bookings.</p>
       ) : bookings.length === 0 ? (
         <p>No bookings yet.</p>
       ) : (
         <div className="booking-list">
-          {bookings.map((b, index) => (
-            <div key={index} className="booking-card">
+          {bookings.map((b, i) => (
+            <div key={i} className="booking-card">
               <img src={b.image} alt={b.name} />
-              <div>
-                <h4>{b.name}</h4>
-                <p>Type: {b.type}</p>
-                {b.location && <p>Location: {b.location}</p>}
-                <p>Price: {b.price}</p>
-                <p>Status: {b.status || "Confirmed"}</p>
-
-                {b.status !== "Paid" && (
-                  <button className="pay-btn" onClick={() => handlePayment(b)}>
-                    💳 Pay Now
-                  </button>
-                )}
-
-                <button className="cancel-btn" onClick={() => handleCancel(index)}>
-                  Cancel
-                </button>
-              </div>
+              <h4>{b.name}</h4>
+              <p>Type: {b.type}</p>
+              <p>Price: {b.price}</p>
+              <button onClick={() => handleCancel(i)}>Cancel</button>
             </div>
           ))}
         </div>

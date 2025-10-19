@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AppContext } from "../App";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Login.css";
 
 export default function Login() {
@@ -8,6 +8,7 @@ export default function Login() {
   const [msg, setMsg] = useState("");
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = () => {
     if (!credentials.email || !credentials.password) {
@@ -15,7 +16,6 @@ export default function Login() {
       return;
     }
 
-    // ✅ Fake login success
     const loggedInUser = {
       name: credentials.email.split("@")[0],
       email: credentials.email,
@@ -23,12 +23,24 @@ export default function Login() {
     };
 
     setUser(loggedInUser);
-
-    // ✅ Save user to localStorage so Home.jsx sees it
     localStorage.setItem("user", JSON.stringify(loggedInUser));
-
     setMsg("Welcome " + credentials.email);
-    navigate("/"); // redirect to home
+
+    // Redirect back if coming from a booking
+    if (location.state?.from) {
+      if (location.state.booking) {
+        const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+        localStorage.setItem(
+          "bookings",
+          JSON.stringify([...existingBookings, { ...location.state.booking, userEmail: loggedInUser.email }])
+        );
+        window.dispatchEvent(new Event("storage"));
+        alert(`✅ Booking confirmed for ${location.state.booking.name}`);
+      }
+      navigate(location.state.from);
+    } else {
+      navigate("/");
+    }
   };
 
   const goToRegister = () => navigate("/register");
@@ -41,6 +53,7 @@ export default function Login() {
         <input
           type="email"
           placeholder="Email address"
+          value={credentials.email}
           onChange={(e) =>
             setCredentials({ ...credentials, email: e.target.value })
           }
@@ -50,6 +63,7 @@ export default function Login() {
         <input
           type="password"
           placeholder="Password"
+          value={credentials.password}
           onChange={(e) =>
             setCredentials({ ...credentials, password: e.target.value })
           }

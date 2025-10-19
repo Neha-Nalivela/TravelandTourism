@@ -93,17 +93,9 @@ const Home = () => {
   return (
     <div className="home-container">
       <h1>🏠 Welcome to Travel & Tourism</h1>
-
-      {/* Quick Links */}
-      <h2>Quick Links</h2>
-      <div className="menu-grid">
-        {menuOptions.map((option, index) => (
-          <Link key={index} to={option.path} className="menu-card">
-            <h3>{option.title}</h3>
-          </Link>
-        ))}
-      </div>
-
+      
+      <br></br>
+      
       {/* Featured Destinations */}
       <h2>🌟 Featured Destinations</h2>
       <div className="scroll-container">

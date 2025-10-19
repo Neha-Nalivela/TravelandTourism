@@ -1,5 +1,13 @@
 import React, { createContext, useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+} from "react-router-dom";
+import { FaBars, FaUserCircle } from "react-icons/fa";
+
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
@@ -16,14 +24,16 @@ export const AppContext = createContext();
 
 function App() {
   const [user, setUser] = useState(null);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
-  // ✅ Load user from localStorage on app start
+  // Load user from localStorage on app start
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) setUser(storedUser);
   }, []);
 
-  // ✅ Save user to localStorage whenever it changes
+  // Sync user with localStorage
   useEffect(() => {
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
@@ -32,24 +42,166 @@ function App() {
     }
   }, [user]);
 
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("bookings"); // optional: clear bookings too
+    window.location.href = "/";
+  };
+
   return (
     <AppContext.Provider value={{ user, setUser }}>
       <Router>
-        <nav style={{ display: "flex", gap: "20px", padding: "20px", background: "#eee" }}>
-          <Link to="/">Home</Link>
-          <Link to="/destinations">Destinations</Link>
-          {!user ? (
-            <Link to="/login">Login</Link>
-          ) : (
-            <>
-              <span>Welcome, {user.name}</span>
-              <button
-                onClick={() => setUser(null)}
-                style={{ background: "none", border: "1px solid #888", padding: "5px 10px" }}
+        <nav
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "15px 25px",
+            background: "#eee",
+            position: "relative",
+          }}
+        >
+          <h2>Travel & Tourism</h2>
+
+          <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+            {/* Menu Icon */}
+            <FaBars
+              size={24}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setShowMenu(!showMenu);
+                setShowProfile(false);
+              }}
+            />
+
+            {/* Profile Icon */}
+            <FaUserCircle
+              size={28}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setShowProfile(!showProfile);
+                setShowMenu(false);
+              }}
+            />
+          </div>
+
+          {/* Menu Dropdown */}
+          {showMenu && (
+            <div
+              style={{
+                position: "absolute",
+                top: "60px",
+                right: "80px",
+                background: "#fff",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                borderRadius: "8px",
+                padding: "10px 15px",
+                zIndex: 1000,
+              }}
+            >
+              <Link
+      to="/"
+      style={{ display: "block", margin: "8px 0" }}
+      onClick={() => setShowMenu(false)}
+    >
+      Home
+    </Link>
+    <Link
+      to="/destinations"
+      style={{ display: "block", margin: "8px 0" }}
+      onClick={() => setShowMenu(false)}
+    ></Link>
+              <Link
+                to="/destinations"
+                style={{ display: "block", margin: "8px 0" }}
+                onClick={() => setShowMenu(false)}
               >
-                Logout
-              </button>
-            </>
+                Destinations
+              </Link>
+              <Link
+                to="/hotels"
+                style={{ display: "block", margin: "8px 0" }}
+                onClick={() => setShowMenu(false)}
+              >
+                Book Hotels
+              </Link>
+              <Link
+                to="/flights"
+                style={{ display: "block", margin: "8px 0" }}
+                onClick={() => setShowMenu(false)}
+              >
+                Book Flights
+              </Link>
+              <Link
+                to="/packages"
+                style={{ display: "block", margin: "8px 0" }}
+                onClick={() => setShowMenu(false)}
+              >
+                Packages
+              </Link>
+              <Link
+                to="/bookings"
+                style={{ display: "block", margin: "8px 0" }}
+                onClick={() => setShowMenu(false)}
+              >
+                My Bookings
+              </Link>
+            </div>
+          )}
+
+          {/* Profile Dropdown */}
+          {showProfile && (
+            <div
+              style={{
+                position: "absolute",
+                top: "60px",
+                right: "25px",
+                background: "#fff",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                borderRadius: "8px",
+                padding: "10px 15px",
+                zIndex: 1000,
+              }}
+            >
+              {!user ? (
+                <>
+                  <Link
+                    to="/login"
+                    style={{ display: "block", margin: "8px 0" }}
+                    onClick={() => setShowProfile(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    style={{ display: "block", margin: "8px 0" }}
+                    onClick={() => setShowProfile(false)}
+                  >
+                    Register
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <span style={{ display: "block", marginBottom: "10px" }}>
+                    Hello, {user.name || user.email}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      border: "none",
+                      background: "#f44",
+                      color: "#fff",
+                      padding: "5px 10px",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
+            </div>
           )}
         </nav>
 
