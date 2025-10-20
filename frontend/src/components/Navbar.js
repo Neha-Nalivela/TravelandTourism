@@ -1,3 +1,4 @@
+//frontend/src/components/Navbar.js
 import React, { useState } from "react";
 import Menu from "./MenuDropdown";
 import Profile from "./ProfileDropdown";

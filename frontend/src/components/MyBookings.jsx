@@ -1,3 +1,4 @@
+//frontend/src/components/MyBookings.jsx
 import React, { useEffect, useState, useContext } from "react";
 import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";

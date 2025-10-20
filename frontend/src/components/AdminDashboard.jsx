@@ -1,3 +1,4 @@
+//frontend/src/components/AdminDashboard.js
 import React, { useState, useEffect, useContext } from "react";
 import API from "./api";
 import { AppContext } from "../App";

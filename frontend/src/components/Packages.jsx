@@ -1,3 +1,4 @@
+//frontend/src/components/Packages.jsx
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";

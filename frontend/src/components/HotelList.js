@@ -1,3 +1,4 @@
+//frontend/src/components/HotelList
 import React, { useEffect, useState, useContext } from "react";
 import API from "./api";
 import { AppContext } from "../App";

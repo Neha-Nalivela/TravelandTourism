@@ -1,3 +1,4 @@
+//backend/models/hotelRoutes.js
 import express from "express";
 import Hotel from "../models/Hotel.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";

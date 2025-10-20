@@ -1,3 +1,4 @@
+//backend/models/Package.js
 import mongoose from "mongoose";
 
 const packageSchema = new mongoose.Schema({

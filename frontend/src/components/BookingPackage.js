@@ -1,3 +1,4 @@
+//frontend/src/components/BookingPackage.js
 import React, { useEffect, useContext } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { AppContext } from "../App";

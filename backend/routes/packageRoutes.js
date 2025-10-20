@@ -1,3 +1,4 @@
+//backend/routes/packageRoutes.js
 import express from "express";
 import Package from "../models/Package.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";

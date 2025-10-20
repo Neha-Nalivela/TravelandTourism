@@ -1,3 +1,4 @@
+//backend/models/Flight.js
 import mongoose from "mongoose";
 
 const flightSchema = new mongoose.Schema({

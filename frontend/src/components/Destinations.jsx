@@ -1,3 +1,4 @@
+//frontend/src/components/Destinations.jsx
 import React, { useState } from "react";
 import "./Destinations.css";
 import Paris from "../images/Paris.webp";

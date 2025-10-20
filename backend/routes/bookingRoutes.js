@@ -1,3 +1,4 @@
+//backend/routes/bookingRoutes.js
 import express from "express";
 import Booking from "../models/Booking.js";
 import { protect } from "../middleware/authMiddleware.js";

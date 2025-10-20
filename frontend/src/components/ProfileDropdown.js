@@ -1,3 +1,4 @@
+//frontend/src/components/ProfileDropdown.js
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";

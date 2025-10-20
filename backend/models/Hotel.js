@@ -1,3 +1,4 @@
+//backend/model/Hotel.js
 import express from "express";
 import Hotel from "../models/Hotel.js";
 import { protect } from "../middleware/authMiddleware.js";

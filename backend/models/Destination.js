@@ -1,3 +1,4 @@
+//backend/models/Destination.js
 import mongoose from "mongoose";
 
 const destinationSchema = new mongoose.Schema({
