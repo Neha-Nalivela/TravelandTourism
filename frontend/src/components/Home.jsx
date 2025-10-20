@@ -30,13 +30,13 @@ const Home = () => {
     return () => window.removeEventListener("storage", handleStorageUpdate);
   }, []);
 
-  const menuOptions = [
+  /*const menuOptions = [
     { title: "🌍 Explore Destinations", path: "/destinations" },
     { title: "🧳 Tour Packages", path: "/packages" },
     { title: "🏨 Hotels", path: "/hotels" },
     { title: "✈️ Flights", path: "/flights" },
     { title: "📝 My Bookings", path: "/bookings" },
-  ];
+  ];*/
 
   const featuredDestinations = [
     { name: "Paris", image: Paris },

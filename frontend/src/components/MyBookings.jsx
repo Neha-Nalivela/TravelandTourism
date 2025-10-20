@@ -9,39 +9,48 @@ const MyBookings = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load all bookings from localStorage
-    const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-
-    if (user && user.email) {
-      // Filter only the logged-in user's bookings
-      const userBookings = storedBookings.filter(
-        (b) => b.userEmail === user.email
-      );
-      setBookings(userBookings);
-    } else {
-      // If not logged in, clear bookings
-      setBookings([]);
+    if (!user?.token) {
+      setBookings([]); // clear bookings if not logged in
+      return;
     }
+
+    // Fetch bookings from backend
+    fetch("http://localhost:5000/api/bookings", {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch bookings");
+        return res.json();
+      })
+      .then((data) => setBookings(data))
+      .catch((err) => {
+        console.error(err);
+        setBookings([]);
+      });
   }, [user]);
 
-  const handleCancel = (index) => {
-    if (!user) {
+  const handleCancel = async (bookingId) => {
+    if (!user?.token) {
       navigate("/login", { state: { from: "/bookings" } });
       return;
     }
 
-    const updatedBookings = [...bookings];
-    const cancelled = updatedBookings.splice(index, 1)[0];
+    try {
+      const res = await fetch(`http://localhost:5000/api/bookings/${bookingId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
 
-    // Update localStorage (remove cancelled booking globally)
-    const allBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    const newAllBookings = allBookings.filter(
-      (b) => !(b.userEmail === user.email && b.name === cancelled.name)
-    );
-    localStorage.setItem("bookings", JSON.stringify(newAllBookings));
+      if (!res.ok) throw new Error("Failed to cancel booking");
 
-    setBookings(updatedBookings);
-    alert(`❌ Booking for "${cancelled.name}" has been cancelled.`);
+      setBookings(bookings.filter((b) => b._id !== bookingId));
+      alert("❌ Booking cancelled successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Error cancelling booking");
+    }
   };
 
   return (
@@ -54,13 +63,13 @@ const MyBookings = () => {
         <p>No bookings yet.</p>
       ) : (
         <div className="booking-list">
-          {bookings.map((b, i) => (
-            <div key={i} className="booking-card">
+          {bookings.map((b) => (
+            <div key={b._id} className="booking-card">
               <img src={b.image} alt={b.name} />
               <h4>{b.name}</h4>
               <p>Type: {b.type}</p>
               <p>Price: {b.price}</p>
-              <button onClick={() => handleCancel(i)}>Cancel</button>
+              <button onClick={() => handleCancel(b._id)}>Cancel</button>
             </div>
           ))}
         </div>

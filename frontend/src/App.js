@@ -4,7 +4,6 @@ import {
   Routes,
   Route,
   Link,
-  useNavigate,
 } from "react-router-dom";
 import { FaBars, FaUserCircle } from "react-icons/fa";
 

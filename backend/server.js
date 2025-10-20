@@ -41,6 +41,9 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes.js";
 import packageRoutes from "./routes/packageRoutes.js";
 import destinationRoutes from "./routes/destinationRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
+import hotelRoutes from "./routes/hotelRoutes.js"
+import flightRoutes from "./routes/flightRoutes.js"
 
 dotenv.config();
 
@@ -54,6 +57,9 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/packages", packageRoutes);
 app.use("/api/destinations", destinationRoutes);
+app.use("/api/bookings",bookingRoutes);
+app.use("/api/hotels", hotelRoutes);
+app.use("/api/flights", flightRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
