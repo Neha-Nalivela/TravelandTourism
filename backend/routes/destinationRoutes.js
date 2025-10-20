@@ -1,9 +1,10 @@
-/*import express from "express";
+import express from "express";
 import Destination from "../models/Destination.js";
+import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Get all destinations
+// GET all destinations
 router.get("/", async (req, res) => {
   try {
     const destinations = await Destination.find();
@@ -13,29 +14,21 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Add new destination
-router.post("/", async (req, res) => {
-  const { name, image, description } = req.body;
+// POST new destination (Admin)
+router.post("/", protect, adminOnly, async (req, res) => {
   try {
-    const newDest = await Destination.create({ name, image, description });
-    res.status(201).json(newDest);
+    const destination = await Destination.create(req.body);
+    res.status(201).json(destination);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-export default router;
-*/
-import express from "express";
-import Destination from "../models/Destination.js"; // import the model
-
-const router = express.Router();
-
-// GET all destinations from MongoDB
-router.get("/", async (req, res) => {
+// DELETE destination by ID (Admin)
+router.delete("/:id", protect, adminOnly, async (req, res) => {
   try {
-    const destinations = await Destination.find(); // fetch from database
-    res.json(destinations);
+    await Destination.findByIdAndDelete(req.params.id);
+    res.json({ message: "Destination deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -42,15 +42,16 @@ import userRoutes from "./routes/userRoutes.js";
 import packageRoutes from "./routes/packageRoutes.js";
 import destinationRoutes from "./routes/destinationRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
-import hotelRoutes from "./routes/hotelRoutes.js"
-import flightRoutes from "./routes/flightRoutes.js"
+import hotelRoutes from "./routes/hotelRoutes.js";
+import flightRoutes from "./routes/flightRoutes.js";
+import seed from "./routes/seed.js";
 
 dotenv.config();
 
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({origin: "http://localhost:3000", credentials: true}));
 app.use(express.json());
 
 // Routes
@@ -60,6 +61,7 @@ app.use("/api/destinations", destinationRoutes);
 app.use("/api/bookings",bookingRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/flights", flightRoutes);
+app.use("/api/seed", seed);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {

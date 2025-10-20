@@ -1,81 +1,66 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
+import API from "./api";
+import { AppContext } from "../App";
+import { useNavigate } from "react-router-dom";
 import "./FlightList.css";
 
 const FlightList = () => {
-  const flights = [
-    {
-      id: 1,
-      airline: "IndiGo",
-      from: "Hyderabad",
-      to: "Delhi",
-      departure: "08:30 AM",
-      arrival: "10:45 AM",
-      duration: "2h 15m",
-      price: "₹4800",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/8/83/IndiGo_Logo.svg",
-    },
-    {
-      id: 2,
-      airline: "Air India",
-      from: "Mumbai",
-      to: "Chennai",
-      departure: "11:00 AM",
-      arrival: "01:10 PM",
-      duration: "2h 10m",
-      price: "₹5400",
-      logo: "https://upload.wikimedia.org/wikipedia/en/4/4b/Air_India_Logo.svg",
-    },
-    {
-      id: 3,
-      airline: "SpiceJet",
-      from: "Bangalore",
-      to: "Goa",
-      departure: "03:15 PM",
-      arrival: "04:30 PM",
-      duration: "1h 15m",
-      price: "₹3200",
-      logo: "https://upload.wikimedia.org/wikipedia/en/2/21/SpiceJet_Logo.svg",
-    },
-  ];
+  const [flights, setFlights] = useState([]);
+  const { user } = useContext(AppContext);
+  const navigate = useNavigate();
 
-  const handleBook = (flight) => {
-    const newBooking = {
-      id: Date.now(),
-      name: flight.airline,
-      image: flight.logo,
-      price: flight.price,
-      type: "Flight",
-      from: flight.from,
-      to: flight.to,
-      status: "Confirmed",
+  useEffect(() => {
+    const getFlights = async () => {
+      try {
+        const res = await API.get("/flights");
+        setFlights(res.data);
+      } catch (err) {
+        console.error("Error loading flights:", err);
+      }
     };
+    getFlights();
+  }, []);
 
-    const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    localStorage.setItem("bookings", JSON.stringify([...existingBookings, newBooking]));
-    alert(`✈️ Flight booked successfully!`);
+  const handleBook = async (flightId) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    const flight = flights.find((f) => f._id === flightId);
+    if (!flight) return;
+
+    try {
+      await API.post("/bookings", {
+        name: flight.airline,
+        type: "flight",
+        price: flight.price,
+        image: flight.image,
+      });
+      alert("Flight booked successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Booking failed");
+    }
   };
 
   return (
     <div className="flight-list">
-      <h2>Available Flights</h2>
+      <h2>✈️ Flights</h2>
       <div className="flights">
-        {flights.map((flight) => (
-          <div key={flight.id} className="flight-card">
+        {flights.map((f) => (
+          <div key={f._id} className="flight-card">
             <div className="flight-header">
-              <img src={flight.logo} alt={flight.airline} className="flight-logo" />
-              <h3>{flight.airline}</h3>
+              {f.image && <img src={f.image} alt={f.airline} className="flight-logo" />}
+              <h3>{f.airline}</h3>
             </div>
             <div className="flight-info">
-              <p><strong>From:</strong> {flight.from}</p>
-              <p><strong>To:</strong> {flight.to}</p>
-              <p><strong>Departure:</strong> {flight.departure}</p>
-              <p><strong>Arrival:</strong> {flight.arrival}</p>
-              <p><strong>Duration:</strong> {flight.duration}</p>
-              <p><strong>Price:</strong> {flight.price}</p>
-              <button className="book-btn" onClick={() => handleBook(flight)}>
-                Book Flight
-              </button>
+              <p>{f.from} ➡️ {f.to}</p>
+              <p>₹{f.price}</p>
+              <p>Departure: {f.departure}</p>
+              <p>Arrival: {f.arrival}</p>
             </div>
+            <button className="book-btn" onClick={() => handleBook(f._id)}>Book</button>
           </div>
         ))}
       </div>

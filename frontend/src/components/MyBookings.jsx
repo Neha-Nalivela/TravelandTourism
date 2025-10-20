@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";
+import API from "./api";
 import "./MyBookings.css";
 
 const MyBookings = () => {
@@ -9,57 +10,35 @@ const MyBookings = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user?.token) {
-      setBookings([]); // clear bookings if not logged in
-      return;
-    }
+    if (!user) return;
 
-    // Fetch bookings from backend
-    fetch("http://localhost:5000/api/bookings", {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch bookings");
-        return res.json();
-      })
-      .then((data) => setBookings(data))
-      .catch((err) => {
-        console.error(err);
-        setBookings([]);
-      });
+    const fetchBookings = async () => {
+      try {
+        const res = await API.get("/bookings");
+        setBookings(res.data);
+      } catch (err) {
+        console.error("Error fetching bookings:", err);
+      }
+    };
+    fetchBookings();
   }, [user]);
 
-  const handleCancel = async (bookingId) => {
-    if (!user?.token) {
-      navigate("/login", { state: { from: "/bookings" } });
-      return;
-    }
-
+  const handleCancel = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/${bookingId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
-
-      if (!res.ok) throw new Error("Failed to cancel booking");
-
-      setBookings(bookings.filter((b) => b._id !== bookingId));
-      alert("❌ Booking cancelled successfully");
+      await API.delete(`/bookings/${id}`);
+      setBookings(bookings.filter((b) => b._id !== id));
+      alert("Booking cancelled");
     } catch (err) {
-      console.error(err);
       alert("Error cancelling booking");
     }
   };
 
+  if (!user) return <p>⚠️ Please login to view your bookings.</p>;
+
   return (
     <div className="my-bookings">
       <h2>📝 My Bookings</h2>
-
-      {!user ? (
-        <p>⚠️ Please login to view your bookings.</p>
-      ) : bookings.length === 0 ? (
+      {bookings.length === 0 ? (
         <p>No bookings yet.</p>
       ) : (
         <div className="booking-list">
@@ -68,7 +47,7 @@ const MyBookings = () => {
               <img src={b.image} alt={b.name} />
               <h4>{b.name}</h4>
               <p>Type: {b.type}</p>
-              <p>Price: {b.price}</p>
+              <p>Price: ₹{b.price}</p>
               <button onClick={() => handleCancel(b._id)}>Cancel</button>
             </div>
           ))}

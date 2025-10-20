@@ -18,6 +18,7 @@ import BookingPage from "./components/BookingPage";
 import BookPackage from "./components/BookingPackage";
 import MyBookings from "./components/MyBookings";
 import PaymentPage from "./components/PaymentsPage";
+import AdminDashboard from "./components/AdminDashboard";
 
 export const AppContext = createContext();
 
@@ -217,6 +218,7 @@ function App() {
           <Route path="/book/:id" element={<BookPackage />} />
           <Route path="/bookings" element={<MyBookings />} />
           <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/admin" element={<AdminDashboard/>} />
         </Routes>
       </Router>
     </AppContext.Provider>

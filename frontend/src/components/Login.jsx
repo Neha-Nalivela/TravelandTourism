@@ -7,39 +7,76 @@ export default function Login() {
   const { setUser } = useContext(AppContext);
   const [msg, setMsg] = useState("");
   const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [showAdminPrompt, setShowAdminPrompt] = useState(false);
+  const [adminCode, setAdminCode] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSubmit = () => {
+  const ADMIN_SECRET_CODE = "supersecret"; // Optional UI code
+
+  const handleAdminClick = () => {
+    setShowAdminPrompt(true);
+  };
+
+  const handleAdminCodeSubmit = () => {
+    if (adminCode === ADMIN_SECRET_CODE) {
+      alert("Admin code correct! Please login with your admin credentials.");
+    } else {
+      alert("Wrong code! Access denied.");
+    }
+    setShowAdminPrompt(false);
+  };
+
+  const handleSubmit = async () => {
     if (!credentials.email || !credentials.password) {
       setMsg("Please enter email and password.");
       return;
     }
 
-    const loggedInUser = {
-      name: credentials.email.split("@")[0],
-      email: credentials.email,
-      token: "dummy-token",
-    };
+    try {
+      const response = await fetch("http://localhost:5000/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
 
-    setUser(loggedInUser);
-    localStorage.setItem("user", JSON.stringify(loggedInUser));
-    setMsg("Welcome " + credentials.email);
-
-    // Redirect back if coming from a booking
-    if (location.state?.from) {
-      if (location.state.booking) {
-        const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-        localStorage.setItem(
-          "bookings",
-          JSON.stringify([...existingBookings, { ...location.state.booking, userEmail: loggedInUser.email }])
-        );
-        window.dispatchEvent(new Event("storage"));
-        alert(`✅ Booking confirmed for ${location.state.booking.name}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        setMsg(errorData.message || "Login failed");
+        return;
       }
-      navigate(location.state.from);
-    } else {
-      navigate("/");
+
+      const data = await response.json();
+
+      // Store user with isAdmin
+      setUser(data);
+      localStorage.setItem("user", JSON.stringify(data));
+      setMsg("Welcome " + data.name);
+
+      // Redirect admin to admin dashboard
+      if (data.isAdmin) {
+        navigate("/admin");
+        return;
+      }
+
+      // Redirect normal users
+      if (location.state?.from) {
+        if (location.state.booking) {
+          const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+          localStorage.setItem(
+            "bookings",
+            JSON.stringify([...existingBookings, { ...location.state.booking, userEmail: data.email }])
+          );
+          window.dispatchEvent(new Event("storage"));
+          alert(`✅ Booking confirmed for ${location.state.booking.name}`);
+        }
+        navigate(location.state.from);
+      } else {
+        navigate("/"); // normal user home
+      }
+    } catch (error) {
+      console.error(error);
+      setMsg("Server error, try again later.");
     }
   };
 
@@ -69,10 +106,27 @@ export default function Login() {
           }
         />
       </p>
-      <button onClick={handleSubmit}>Submit</button>
+      <button onClick={handleSubmit}>Login</button>
       <p>
         <button onClick={goToRegister}>Create Account</button>
       </p>
+
+      {/* Optional Admin Code UI */}
+      <p>
+        <button onClick={handleAdminClick}>Admin</button>
+      </p>
+
+      {showAdminPrompt && (
+        <div style={{ marginTop: "10px" }}>
+          <input
+            type="password"
+            placeholder="Enter admin code"
+            value={adminCode}
+            onChange={(e) => setAdminCode(e.target.value)}
+          />
+          <button onClick={handleAdminCodeSubmit}>Submit Code</button>
+        </div>
+      )}
     </div>
   );
 }

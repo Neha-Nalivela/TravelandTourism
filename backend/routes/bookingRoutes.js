@@ -14,13 +14,13 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
-// CREATE a new booking
+// CREATE a new booking (only if user is logged in)
 router.post("/", protect, async (req, res) => {
   const { name, type, price, image } = req.body;
 
   try {
     const booking = await Booking.create({
-      user: req.user._id,
+      user: req.user._id,  // link booking to logged-in user
       name,
       type,
       price,
@@ -32,7 +32,7 @@ router.post("/", protect, async (req, res) => {
   }
 });
 
-// DELETE a booking by ID
+// DELETE a booking by ID (only if user owns it)
 router.delete("/:id", protect, async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -41,7 +41,6 @@ router.delete("/:id", protect, async (req, res) => {
       return res.status(404).json({ message: "Booking not found" });
     }
 
-    // Only allow user to delete their own bookings
     if (booking.user.toString() !== req.user._id.toString()) {
       return res.status(401).json({ message: "Not authorized" });
     }
