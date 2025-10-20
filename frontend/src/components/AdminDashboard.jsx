@@ -1,4 +1,3 @@
-// src/components/AdminDashboard.jsx
 import React, { useState, useEffect, useContext } from "react";
 import API from "./api";
 import { AppContext } from "../App";
@@ -17,6 +16,7 @@ export default function AdminDashboard() {
   const [newPackage, setNewPackage] = useState({ name: "", price: "", image: "", details: [] });
   const [newDestination, setNewDestination] = useState({ name: "", description: "", image: "" });
 
+  // Fetch data
   const fetchData = async () => {
     try {
       const flightRes = await API.get("/flights");
@@ -38,6 +38,7 @@ export default function AdminDashboard() {
     fetchData();
   }, [user]);
 
+  // DELETE item
   const handleDelete = async (type, id) => {
     if (!window.confirm("Are you sure you want to delete?")) return;
     try {
@@ -50,15 +51,18 @@ export default function AdminDashboard() {
     }
   };
 
+  // ADD item
   const handleAdd = async (type, data) => {
     try {
       await API.post(`/${type}`, data);
       setMsg(`${type.slice(0, -1)} added successfully`);
+
       // reset form
       if (type === "flights") setNewFlight({ airline: "", from: "", to: "", price: "", departure: "", arrival: "", image: "" });
       if (type === "hotels") setNewHotel({ name: "", location: "", pricePerNight: "", image: "", description: "" });
       if (type === "packages") setNewPackage({ name: "", price: "", image: "", details: [] });
       if (type === "destinations") setNewDestination({ name: "", description: "", image: "" });
+
       fetchData();
     } catch (err) {
       console.error(err);
@@ -66,6 +70,7 @@ export default function AdminDashboard() {
     }
   };
 
+  // Render table
   const renderTable = (items, type) => (
     <table border="1" style={{ marginBottom: "20px", width: "100%" }}>
       <thead>

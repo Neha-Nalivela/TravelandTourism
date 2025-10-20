@@ -1,3 +1,4 @@
+//backend/routes/flightRoutes.js
 import express from "express";
 import Flight from "../models/Flight.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
