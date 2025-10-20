@@ -12,42 +12,36 @@ const Packages = () => {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const res = await API.get("/packages");  // backend API
+        const res = await API.get("/packages"); // backend API if exists
         setPackages(res.data);
       } catch (err) {
-        console.error("Error fetching packages:", err);
+        console.error(err);
       }
     };
     fetchPackages();
   }, []);
 
-  const handleBook = async (pkg) => {
+  const handleBook = pkg => {
     if (!user) {
       navigate("/login");
       return;
     }
-    try {
-      await API.post("/bookings", { ...pkg, type: "package" });
-      alert("Package booked successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Booking failed");
-    }
+
+    const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    localStorage.setItem("bookings", JSON.stringify([...existingBookings, { ...pkg, type: "Package", userEmail: user.email }]));
+    alert(`✅ Booking Confirmed for ${pkg.name}`);
   };
 
   return (
     <div className="packages-container">
       <h1>🧳 Tour Packages</h1>
       <div className="package-grid">
-        {packages.map((pkg) => (
+        {packages.map(pkg => (
           <div className="package-card" key={pkg._id}>
             <img src={pkg.image} alt={pkg.name} />
-            <div className="package-info">
-              <h3>{pkg.name}</h3>
-              <p className="price">₹{pkg.price}</p>
-              <p>{pkg.description}</p>
-              <button className="book-btn" onClick={() => handleBook(pkg)}>Book Now</button>
-            </div>
+            <h3>{pkg.name}</h3>
+            <p>₹{pkg.price}</p>
+            <button onClick={() => handleBook(pkg)}>Book Now</button>
           </div>
         ))}
       </div>

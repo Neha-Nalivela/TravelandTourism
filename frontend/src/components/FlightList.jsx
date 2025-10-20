@@ -2,10 +2,12 @@ import React, { useEffect, useState, useContext } from "react";
 import API from "./api";
 import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";
+import FlightBooking from "./FlightBooking";
 import "./FlightList.css";
 
 const FlightList = () => {
   const [flights, setFlights] = useState([]);
+  const [selectedFlight, setSelectedFlight] = useState(null);
   const { user } = useContext(AppContext);
   const navigate = useNavigate();
 
@@ -21,39 +23,18 @@ const FlightList = () => {
     getFlights();
   }, []);
 
-  const handleBook = async (flightId) => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    const flight = flights.find((f) => f._id === flightId);
-    if (!flight) return;
-
-    if (flight.bookedSeats >= flight.totalSeats) {
-      alert("No seats available!");
-      return;
-    }
-
-    try {
-      await API.post("/bookings", { itemId: flightId, type: "flight" });
-      setFlights((prev) =>
-        prev.map((f) =>
-          f._id === flightId ? { ...f, bookedSeats: f.bookedSeats + 1 } : f
-        )
-      );
-      alert("Flight booked successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Booking failed");
-    }
-  };
+  if (selectedFlight)
+    return <FlightBooking flight={selectedFlight} onBooked={() => {
+      setSelectedFlight(null);
+      // refresh flights
+      setFlights(prev => [...prev]);
+    }} />;
 
   return (
     <div className="flight-list">
       <h2>✈️ Flights</h2>
       <div className="flights">
-        {flights.map((f) => (
+        {flights.map(f => (
           <div key={f._id} className="flight-card">
             <div className="flight-header">
               {f.image && <img src={f.image} alt={f.airline} className="flight-logo" />}
@@ -64,15 +45,15 @@ const FlightList = () => {
               <p>₹{f.price}</p>
               <p>Departure: {new Date(f.departure).toLocaleString()}</p>
               <p>Arrival: {new Date(f.arrival).toLocaleString()}</p>
-              <p>
-                Seats: {f.bookedSeats} booked / {f.totalSeats} total
-              </p>
+              <p>Seats booked: {f.bookedSeats.length} / {f.totalSeats}</p>
               <button
-                className="book-btn"
-                onClick={() => handleBook(f._id)}
-                disabled={f.bookedSeats >= f.totalSeats}
+                onClick={() => {
+                  if (!user) navigate("/login");
+                  else setSelectedFlight(f);
+                }}
+                disabled={f.bookedSeats.length >= f.totalSeats}
               >
-                {f.bookedSeats >= f.totalSeats ? "Sold Out" : "Book"}
+                {f.bookedSeats.length >= f.totalSeats ? "Sold Out" : "Select Seats"}
               </button>
             </div>
           </div>
