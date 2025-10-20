@@ -1,4 +1,3 @@
-//frontend/src/components/FlightList.jsx
 import React, { useEffect, useState, useContext } from "react";
 import API from "./api";
 import { AppContext } from "../App";
@@ -31,13 +30,18 @@ const FlightList = () => {
     const flight = flights.find((f) => f._id === flightId);
     if (!flight) return;
 
+    if (flight.bookedSeats >= flight.totalSeats) {
+      alert("No seats available!");
+      return;
+    }
+
     try {
-      await API.post("/bookings", {
-        name: flight.airline,
-        type: "flight",
-        price: flight.price,
-        image: flight.image,
-      });
+      await API.post("/bookings", { itemId: flightId, type: "flight" });
+      setFlights((prev) =>
+        prev.map((f) =>
+          f._id === flightId ? { ...f, bookedSeats: f.bookedSeats + 1 } : f
+        )
+      );
       alert("Flight booked successfully!");
     } catch (err) {
       console.error(err);
@@ -58,10 +62,19 @@ const FlightList = () => {
             <div className="flight-info">
               <p>{f.from} ➡️ {f.to}</p>
               <p>₹{f.price}</p>
-              <p>Departure: {f.departure}</p>
-              <p>Arrival: {f.arrival}</p>
+              <p>Departure: {new Date(f.departure).toLocaleString()}</p>
+              <p>Arrival: {new Date(f.arrival).toLocaleString()}</p>
+              <p>
+                Seats: {f.bookedSeats} booked / {f.totalSeats} total
+              </p>
+              <button
+                className="book-btn"
+                onClick={() => handleBook(f._id)}
+                disabled={f.bookedSeats >= f.totalSeats}
+              >
+                {f.bookedSeats >= f.totalSeats ? "Sold Out" : "Book"}
+              </button>
             </div>
-            <button className="book-btn" onClick={() => handleBook(f._id)}>Book</button>
           </div>
         ))}
       </div>
