@@ -1,8 +1,8 @@
-//frontend/src/components/HotelList
 import React, { useEffect, useState, useContext } from "react";
 import API from "./api";
 import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";
+import "./HotelList.css";
 
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
@@ -35,16 +35,21 @@ const HotelList = () => {
   };
 
   return (
-    <div className="hotels">
+    <div className="hotel-list">
       <h2>🏨 Hotels</h2>
-      <div className="list">
+      <div className="hotels">
         {hotels.map((h) => (
-          <div key={h._id} className="card">
+          <div key={h._id} className="hotel-card">
             <img src={h.image} alt={h.name} />
-            <h3>{h.name}</h3>
-            <p>{h.location}</p>
-            <p>₹{h.price}</p>
-            <button onClick={() => handleBook(h._id)}>Book</button>
+            <div className="hotel-info">
+              <h3>{h.name}</h3>
+              <p>{h.location}</p>
+              <p>₹{h.pricePerNight || h.price}</p>
+              <p className="description">{h.description}</p>
+              <button className="book-btn" onClick={() => handleBook(h._id)}>
+                Book
+              </button>
+            </div>
           </div>
         ))}
       </div>

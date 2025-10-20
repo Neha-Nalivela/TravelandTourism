@@ -1,12 +1,10 @@
-//backend/models/Package.js
 import mongoose from "mongoose";
 
 const packageSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  image: { type: String },
-  price: { type: String },
-  details: [{ type: String }],
+  price: { type: Number, required: true },
+  image: { type: String, required: true },
+  description: { type: String },
 });
 
-const Package = mongoose.model("Package", packageSchema);
-export default Package;
+export default mongoose.model("Package", packageSchema);
