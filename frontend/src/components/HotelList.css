@@ -1,7 +1,6 @@
 .hotel-list {
   padding: 30px;
   text-align: center;
-  background-color: #f9f9f9;
 }
 
 .hotel-list h2 {
@@ -15,6 +14,7 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 25px;
   justify-content: center;
+  background-color: rgb(210, 210, 183);
 }
 
 .hotel-card {
