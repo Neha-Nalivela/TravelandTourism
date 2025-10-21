@@ -1,0 +1,158 @@
+/* General container */
+.admin-dashboard {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: "Poppins", sans-serif;
+  color: #333;
+}
+
+/* Heading */
+.admin-dashboard h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1e88e5;
+}
+
+/* Message display */
+.message {
+  text-align: center;
+  font-weight: 500;
+  color: #388e3c;
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+/* Tabs */
+.admin-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+  gap: 10px;
+}
+
+.admin-tabs button {
+  background: #e3f2fd;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1976d2;
+  transition: all 0.3s ease;
+}
+
+.admin-tabs button:hover {
+  background: #bbdefb;
+}
+
+.admin-tabs button.active {
+  background: #1976d2;
+  color: white;
+  box-shadow: 0 3px 8px rgba(25, 118, 210, 0.3);
+}
+
+/* Form styling */
+.admin-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.admin-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.admin-form input:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 4px rgba(25, 118, 210, 0.3);
+}
+
+.admin-form button {
+  grid-column: 1 / -1;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.admin-form button:hover {
+  background: #1565c0;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+th {
+  background: #1976d2;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #ddd;
+  word-wrap: break-word;
+}
+
+tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+tr:hover {
+  background: #e3f2fd;
+}
+
+table button {
+  background: #e53935;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+table button:hover {
+  background: #c62828;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .admin-form {
+    grid-template-columns: 1fr;
+  }
+
+  th,
+  td {
+    font-size: 12px;
+  }
+
+  .admin-form button {
+    font-size: 14px;
+  }
+}
