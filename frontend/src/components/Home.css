@@ -110,7 +110,7 @@
 }
 
 .right-deal {
-  width: 60%; /* right side width */
+  width: 54%; /* right side width */
   display: flex;
 }
 
@@ -189,4 +189,29 @@
 
 .booking-card .cancel-btn:hover {
   background: #b71c1c;
+}
+.section-destinations{
+  background-color: #9ab9c2;
+  padding:10px;
+  margin-top:10px;
+}
+.section-packages{
+  background-color: #46b8db;
+  padding:10px;
+  margin-top:10px;
+}
+.special-deals{
+  background-color: #8aa1b0;
+  padding:10px;
+  margin-top: 10px;
+}
+.section-bookings{
+  background-color: #8394c4;
+  padding:10px;
+  margin-top: 10px;
+}
+.section-testimonials{
+  background-color: #548580;
+  padding:10px;
+  margin-top:10px;
 }

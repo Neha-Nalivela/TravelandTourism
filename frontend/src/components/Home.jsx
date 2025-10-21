@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
+
+// images
 import Paris from "../assets/Paris1.jpg";
 import Bali from "../images/Bali.jpg";
 import NewYork from "../images/NewYork.jpg";
@@ -14,29 +16,19 @@ const Home = () => {
   const [bookings, setBookings] = useState([]);
   const [user, setUser] = useState(null);
 
-  // Load from localStorage
   useEffect(() => {
-    const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    // safe parsing with defaults
+    const storedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     setBookings(storedBookings);
-    const storedUser = JSON.parse(localStorage.getItem("user")) || null;
     setUser(storedUser);
 
-    // Listen for updates from other pages
     const handleStorageUpdate = () => {
-      const updatedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-      setBookings(updatedBookings);
+      setBookings(JSON.parse(localStorage.getItem("bookings") || "[]"));
     };
     window.addEventListener("storage", handleStorageUpdate);
     return () => window.removeEventListener("storage", handleStorageUpdate);
   }, []);
-
-  /*const menuOptions = [
-    { title: "🌍 Explore Destinations", path: "/destinations" },
-    { title: "🧳 Tour Packages", path: "/packages" },
-    { title: "🏨 Hotels", path: "/hotels" },
-    { title: "✈️ Flights", path: "/flights" },
-    { title: "📝 My Bookings", path: "/bookings" },
-  ];*/
 
   const featuredDestinations = [
     { name: "Paris", image: Paris },
@@ -61,125 +53,126 @@ const Home = () => {
     { name: "Jane Smith", comment: "Best travel portal ever, loved the packages." },
   ];
 
-  // ✅ FIXED: Booking now updates Home instantly
   const handleBook = (pkg) => {
     if (!user) {
       alert("⚠️ Please login to book a package!");
       navigate("/login");
       return;
     }
-
-    const newBooking = {
-      name: pkg.name,
-      image: pkg.image,
-      price: pkg.price,
-      type: "Package",
-    };
-
-    const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    const updatedBookings = [...existingBookings, newBooking];
+    const newBooking = { name: pkg.name, image: pkg.image, price: pkg.price, type: "Package" };
+    const updatedBookings = [...bookings, newBooking];
     localStorage.setItem("bookings", JSON.stringify(updatedBookings));
     setBookings(updatedBookings);
     alert(`✅ Package booked: ${pkg.name}`);
   };
 
   const handleCancel = (index) => {
-    const updatedBookings = [...bookings];
-    updatedBookings.splice(index, 1);
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
-    setBookings(updatedBookings);
+    const updated = bookings.filter((_, i) => i !== index);
+    localStorage.setItem("bookings", JSON.stringify(updated));
+    setBookings(updated);
   };
 
   return (
     <div className="home-container">
       <h1>🏠 Welcome to Travel & Tourism</h1>
-      
-      <br></br>
-      
+
       {/* Featured Destinations */}
-      <h2>🌟 Featured Destinations</h2>
-      <div className="scroll-container">
-        {featuredDestinations.map((dest, index) => (
-          <div key={index} className="destination-card">
-            <img src={dest.image} alt={dest.name} />
-            <h4>{dest.name}</h4>
-          </div>
-        ))}
-      </div>
-
-      <div className="view-more">
-        <Link to="/destinations">View all destinations →</Link>
-      </div>
-
-      {/* Popular Packages */}
-      <h2>🧳 Popular Packages</h2>
-      <div className="scroll-container">
-        {popularPackages.map((pkg) => (
-          <div key={pkg.id} className="package-item">
-            <img src={pkg.image} alt={pkg.name} />
-            <div>
-              <h4>{pkg.name}</h4>
-              <p>{pkg.price}</p>
-              <button className="book-btn" onClick={() => handleBook(pkg)}>Book Now</button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* 🔥 Special Deals - Equal height left & right */}
-      <h2>🔥 Special Deals</h2>
-      <div className="special-deals-container">
-        <div className="left-deals">
-          {specialDeals.slice(0, 2).map((deal) => (
-            <div className="deal-card" key={deal.id}>
-              <img src={deal.image} alt={deal.title} />
-              <h4>{deal.title}</h4>
-              <p>{deal.description}</p>
-              <Link to="/packages" className="book-btn">Book Now</Link>
+      <section className="section-destinations">
+        <h2>🌟 Featured Destinations</h2>
+        <div className="scroll-container">
+          {featuredDestinations.map((dest, i) => (
+            <div key={i} className="destination-card">
+              <img src={dest.image} alt={dest.name} />
+              <h4>{dest.name}</h4>
             </div>
           ))}
         </div>
-
-        <div className="right-deal">
-          <div className="deal-card full-height">
-            <img src={specialDeals[2].image} alt={specialDeals[2].title} />
-            <h4>{specialDeals[2].title}</h4>
-            <p>{specialDeals[2].description}</p>
-            <Link to="/packages" className="book-btn">Book Now</Link>
-          </div>
+        <div className="view-more">
+          <Link to="/destinations">View all destinations →</Link>
         </div>
-      </div>
+      </section>
 
-      {/* Testimonials */}
-      <h2>💬 What Our Travelers Say</h2>
-      <div className="scroll-container">
-        {testimonials.map((t, index) => (
-          <div key={index} className="testimonial-card">
-            <p>"{t.comment}"</p>
-            <h5>- {t.name}</h5>
-          </div>
-        ))}
-      </div>
-
-      {/* My Bookings */}
-      <h2>📝 My Bookings</h2>
-      {bookings.length > 0 ? (
+      {/* Popular Packages */}
+      <section className="section-packages">
+        <h2>🧳 Popular Packages</h2>
         <div className="scroll-container">
-          {bookings.map((b, index) => (
-            <div key={index} className="booking-card">
-              <img src={b.image} alt={b.name} />
-              <div>
-                <h4>{b.name}</h4>
-                <p>{b.price}</p>
-                <p className="confirmed">✅ Booking Confirmed</p>
-                <button className="cancel-btn" onClick={() => handleCancel(index)}>Cancel</button>
+          {popularPackages.map((pkg) => (
+            <div key={pkg.id} className="package-item">
+              <img src={pkg.image} alt={pkg.name} />
+              <div className="package-details">
+                <h4>{pkg.name}</h4>
+                <p>{pkg.price}</p>
+                <button className="book-btn" onClick={() => handleBook(pkg)}>Book Now</button>
               </div>
             </div>
           ))}
         </div>
-      ) : (
-        <p>No bookings yet. Book your next adventure!</p>
-      )}
+      </section>
+
+      {/* Special Deals (format preserved) */}
+      <section className="special-deals section">
+        <h2>🔥 Special Deals</h2>
+        <div className="special-deals-container">
+          <div className="left-deals">
+            {specialDeals.slice(0, 2).map((deal) => (
+              <div className="deal-card" key={deal.id}>
+                <img src={deal.image} alt={deal.title} />
+                <div className="deal-content">
+                  <h4>{deal.title}</h4>
+                  <p>{deal.description}</p>
+                  <Link to="/packages" className="book-btn">Book Now</Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="right-deal">
+            <div className="deal-card full-height">
+              <img src={specialDeals[2].image} alt={specialDeals[2].title} />
+              <div className="deal-content">
+                <h4>{specialDeals[2].title}</h4>
+                <p>{specialDeals[2].description}</p>
+                <Link to="/packages" className="book-btn">Book Now</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="section-testimonials">
+        <h2>💬 What Our Travelers Say</h2>
+        <div className="scroll-container">
+          {testimonials.map((t, i) => (
+            <div key={i} className="testimonial-card">
+              <p>"{t.comment}"</p>
+              <h5>- {t.name}</h5>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* My Bookings */}
+      <section className="section-bookings">
+        <h2>📝 My Bookings</h2>
+        {bookings.length > 0 ? (
+          <div className="scroll-container">
+            {bookings.map((b, i) => (
+              <div key={i} className="booking-card">
+                <img src={b.image} alt={b.name} />
+                <div className="booking-details">
+                  <h4>{b.name}</h4>
+                  <p>{b.price}</p>
+                  <p className="confirmed">✅ Booking Confirmed</p>
+                  <button className="cancel-btn" onClick={() => handleCancel(i)}>Cancel</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No bookings yet. Book your next adventure!</p>
+        )}
+      </section>
     </div>
   );
 };
